@@ -102,7 +102,8 @@
 	</footer>
 
 	<script>
-		$("h1").html("Housing Ownership in Kentucky");
+		$("h1").html("Housing in Kentucky");
+		$("h2").html("Percentage of Renters, by County")
 
 		var options = {
 			center: [37.8, -85.8]
@@ -119,7 +120,7 @@
 						style: function (feature) {
 							return {
 								color: '#dddddd'
-								, weight: 1
+								, weight: 2
 								, fillOpacity: 1
 								, fillColor: '#1f78b4'
 							};
@@ -136,8 +137,8 @@
 						dataLayer.eachLayer(function (layer) {
 							layer.setStyle({
 								fillColor:
-								getColor(layer.feature.properties['OWNED_MORT']
-										 /layer.feature.properties['OWNER'], breaks)
+								getColor(layer.feature.properties['RENTER']
+										 /layer.feature.properties['OCCUPIED'], breaks)
 							})
 						});
 						
@@ -149,7 +150,7 @@
 						var values = [];
 
 						dataLayer.eachLayer(function (layer) {
-							values.push(layer.feature.properties['OWNED_MORT'] / layer.feature.properties['OWNER'])
+							values.push(layer.feature.properties['RENTER'] / layer.feature.properties['OCCUPIED'])
 						});
 
 						var clusters = ss.ckmeans(values, 5);
@@ -186,7 +187,7 @@
 								
 								var div = L.DomUtil.create('div','legend');
 								
-							div.innerHTML = "<h3> % Owners with Mortgage </h3>";
+							div.innerHTML = "<h3> % Renters as Total of Occupied Housing </h3>";
 								
 							for (var i = 0; i < breaks.length; i++){
 							var color = getColor(breaks[i][0], breaks);
