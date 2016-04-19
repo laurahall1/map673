@@ -124,6 +124,11 @@
 								, fillOpacity: 1
 								, fillColor: '#1f78b4'
 							};
+							
+							onEachFeature: function(feature, layer){
+								layer.bindPopup("<b>"+feature.properties.'NAME'"</b><br>"+feature.properties['RENTER'*100]
+												toLocaleString());
+							}
 						}
 
 					}).addTo(map);
@@ -144,7 +149,6 @@
 						
 						drawLegend(breaks);
 					}
-			
 
 					function getClassBreaks(dataLayer) {
 						var values = [];
@@ -162,7 +166,9 @@
 
 						return breaks;
 					}
-
+			
+		});
+			    
 					function getColor(d, breaks) {
 						
 						if(d <= breaks[0][1]) {
@@ -203,7 +209,8 @@
 							
 							legend.addTo(map);
 						}
-		})
+			
+		
 			
 	</script>
 
