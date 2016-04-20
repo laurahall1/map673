@@ -129,8 +129,8 @@
 						
 						},
                           onEachFeature: function(feature, layer){
-						layer.bindPopup("<b>"+feature.properties.NAME+"</b><br>"+feature.properties.RENTER/100+"   RENTER");
-							  
+						layer.bindPopup("<b>"+feature.properties.NAME+"</b><br>"+((feature.properties['RENTER']/
+                            feature.properties['OCCUPIED'])*100).toLocaleString()+"% RENTERS");
 							}
 					}).addTo(map);
 					drawMap(dataLayer);
