@@ -9,8 +9,8 @@
     <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.0/simple_statistics.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.1.2/papaparse.min.js"></script>
+	
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
     <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 
@@ -73,39 +73,99 @@
 });
 		map.addLayer(tiles);
 		
+		//declare global variables
+		var dataLayer;
+		
 		 // AJAX requests to load data files
 		$.getJSON('us-states.json', function(states){
 			console.log(states);
 			L.geoJson(states).addTo(map);
 			
 			Papa.parse('states-unemployment.csv', {
-				download: true,
-				header: true,
-				complete: function(data){
-					console.log(data);
-				}
-				
-			})
-					  
-			
-		})
-	
 
-				 
-				 
+        download: true,
+        header: true,
+        complete: function(data) {
+			
+			processData(states, data);
+           
+
+        }
+    });
+
+});		 
                 
-        // declare global variables
+        
 
  
         // function to process/bind data
+		function processData(states, data){
+			
+			for(var state in states.features){
+				var props = states.features[state].properties;
+				for(var d in data.data){
+					if(props.STATEFP == data.data[d].STATE_FIP){
+						states.features[state].properties = data.data[d];
+						break;
+						
+					}
+					
+				}
+				
+			}
+			drawMap(states);
+		}
 
         // function to draw the map
-        
+		function drawMap (states){
+			var dataLayer = L.geoJson(states,{
+				style: function(feature){
+					
+					return {
+						color:'white',
+						weight: 1,
+						fillOpacity: 1,
+						fillColor: '#1f78b4'
+					}
+				}
+				
+	           }).addTo(map);
+		}
+		updateMap();
+		
         // function to update the map
+		function updateMap() {
+			
+			var breaks = getClassBreaks();
+			
+			dataLayer.eachLayer(function(layer){
+				layer.setStyle({
+					fillColor:getColor(layer.feature.properties['2001'],breaks)
+					
+				})
+				
+			});
+							   
+		}
+		
         
-        // function get the class breaks   
+        // function get the class breaks  
+		   function getClassBreaks(){
+				
+				var values = [];
+				
+				dataLayer.eachLayer(function(layer) {
+				var value = Number(layer.feature.properties['2001']);
+					values.push(values);
+				});
+				console.log(values);
+								   
+			}
         
         // function to get the color value
+		function getColor(value, breaks){
+			
+		}
                 
         // function to draw the legend
         
