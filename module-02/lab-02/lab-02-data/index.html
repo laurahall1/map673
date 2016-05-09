@@ -95,6 +95,7 @@
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
             border-radius: 5px;
 			text-align: right;
+            display: none;
 		}
 		.info h3{
 			margin: 0;
@@ -111,7 +112,7 @@
         <h2>Map Subtitle</h2>
     </header>
 	<!--set up form for the dropdown menu that will appear in map-->
-	<div id = 'ui controls'>
+	<div id = 'ui-controls'>
 		<label>Choose a data attribute:</label>
 		<!--set up attributes user can choose to explore regarding map content-->
 	     <select id="vacant">
@@ -215,21 +216,19 @@
 				layer.on('mouseover', function(){
 					
 					$('.info').show();
+                    layer.bringToFront();
+                    layer.setStyle({color: 'yellow'});
 					
 					//display calculated values for each layer in info panel
-					updateInfo(layer)
-				//this was an unsuccessful attempt to create a mouseover function //that would change the stroke color to yellow	
-				layer.on('mouseover',function(){
-					
-                    $('#map').show('color','yellow');
-        });							
+					updateInfo(layer);						
 
 					
 				});
 				//hides info panel when mouse is moved off the outline of KY
 				layer.on('mouseout', function(){
 					$('.info').hide();
-					
+                    
+					layer.setStyle({color: '#dddddd'});
 				});
 				
 				
