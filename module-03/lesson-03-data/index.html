@@ -79,11 +79,11 @@
 
 		//declare global variables
 		var dataLayer;
-		var attribute = 2001
+		
 
 		// AJAX requests to load data files
 		$.getJSON('us-states.json', function (states) {
-			console.log(states);
+			
 			L.geoJson(states).addTo(map);
 
 			Papa.parse('states-unemployment.csv', {
@@ -116,7 +116,6 @@
 					
 			  }//end of outer loop
 			   drawMap(states);
-			
 		    }  
 		
 		// function to draw the map
@@ -157,13 +156,15 @@
 
 			var values = [];
 
-			dataLayer.eachLayer(function (layer) {
+			dataLayer.eachLayer(function(layer) {
 				var value = Number(layer.feature.properties['2001']);
-				values.push(values);
+				values.push(value);
 			});
-			
+			console.log(values);
 
 			var breaks = ss.quantile(values,[0, 0.2, 0.4, 0.6, 0.8, 1]);
+			
+			return breaks;
 			
 			
 
