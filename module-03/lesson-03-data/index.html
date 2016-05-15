@@ -79,11 +79,12 @@
 
 		//declare global variables
 		var dataLayer;
-		
+		var attribute = 2001;
+
 
 		// AJAX requests to load data files
 		$.getJSON('us-states.json', function (states) {
-			
+
 			L.geoJson(states).addTo(map);
 
 			Papa.parse('states-unemployment.csv', {
@@ -102,22 +103,26 @@
 
 
 		// function to process/bind data
-		function processData(states, data){
-		
+		function processData(states, data) {
+
 			for (var state in states.features) {
 
 				var props = states.features[state].properties;
-				for(var d in data.data) {
-                   if(props.STATEFP === data.data[d].STATE_FIP);{
-					   states.features[state].properties = data.data[d];
-					   break;
-				   }
-				}//end of inner loop
-					
-			  }//end of outer loop
-			   drawMap(states);
-		    }  
-		
+
+				for (d in data.data) {
+					if (props.STATEFP === data.data[d].STATE_FIP) {
+						states.features[state].properties = data.data[d];
+						break;
+					}
+
+				} //end of inner loop
+			} //end of outer loop
+			
+			drawLegend();
+			drawMap(states);
+
+		}
+
 		// function to draw the map
 		function drawMap(states) {
 			dataLayer = L.geoJson(states, {
@@ -143,11 +148,13 @@
 
 			dataLayer.eachLayer(function (layer) {
 				layer.setStyle({
-					fillColor: getColor(Number(layer.feature.properties['2001']), breaks)
+					fillColor: getColor(Number(layer.feature.properties[attribute]), breaks)
 
 				})
 
 			});
+			
+			//updateLegend(breaks);
 
 		}
 
@@ -156,19 +163,16 @@
 
 			var values = [];
 
-			dataLayer.eachLayer(function(layer) {
-				var value = Number(layer.feature.properties['2001']);
+			dataLayer.eachLayer(function (layer) {
+				var value = Number(layer.feature.properties[attribute]);
 				values.push(value);
 			});
-			console.log(values);
+		   
 
-			var breaks = ss.quantile(values,[0, 0.2, 0.4, 0.6, 0.8, 1]);
-			
+			var breaks = ss.quantile(values, [0, 0.2, 0.4, 0.6, 0.8, 1]);
+
 			return breaks;
-			
-			
 
-			
 		}
 
 		// function to get the color value
@@ -188,9 +192,8 @@
 		}
 		// function to draw the legend
 		function drawLegend() {
-			var legend = L.control({
-				position: 'topright'
-			});
+			var legend = L.control({position: 'topright'});
+			
 			//when legend is added to the map
 			legend.onAdd = function (map) {
 
@@ -200,14 +203,26 @@
 				//return the populated div to be added to the map
 				return div;
 
-			}
+			};
+			
+			legend.addTo(map);
 
 		}
 
 		// function to update the legend
-		function updateLegend() {
-
+	function updateLegend(){
+		var legend = $('.legend').html("<h3>% Unemployment: " + attribute +"</h3><ul>");
+		for(var i = 0; i< breaks.length - 1; i++){
+			var color = getColor(breaks[i + 1], breaks);
+			$('.legend ul').append('<li><span style = "background:' + color + '"></span>'+
+				breaks[i] + ' &mdash;' +
+				breaks[1 + 1] + '</li>');
+			
 		}
+		legend.append("</ul>");
+	}
+		
+		//
 
 
 		// function to create the range slider
