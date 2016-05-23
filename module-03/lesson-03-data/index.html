@@ -28,6 +28,15 @@
 		}
 		
 		h1 {
+			position: absolute;
+			z-index: 1;
+			top: 10px;
+			left: 60px;
+			font-size: 1.5em;
+            background: rgba(75,75,75,0.8);
+            color: whitesmoke;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			border-radius: 5px;
 			padding: 8px 15px;
 			margin: 0;
 		}
@@ -48,12 +57,68 @@
 			font-size: 1em;
 			color: #001323;
 		}
+			.legend {
+            padding: 6px 8px;
+            font-size: 1em;
+            background: rgba(75,75,75,0.8);
+            color: whitesmoke;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            width: 160px;
+        }
+        .legend h3 {
+            font-size: 1.1em;
+            font-weight: bold;
+            line-height: 1em;
+            color: whitesmoke;
+            margin: 0;
+        }
+        .legend ul {
+            list-style-type: none;   
+            padding: 0;
+            margin: 12px 4px 0;
+        }
+        .legend li { 
+            height: 22px;
+        }
+        .legend span {
+            width: 30px;
+            height: 20px;
+            float: left;
+            margin-right: 10px;
+		}
+		#ui-controls{
+			width: 176px;
+			padding: 8px 25px 8px 15px;
+			background: rgba(75,75,75,0.8);	
+			box-shadow: 0 0 15px rgba(0,0,0,0.2);
+			border-radius: 5px;
+			color: whitesmoke;
+		}
+		#ui-controls .min{
+			float: left;
+		}
+		#ui-controls .max{
+			float: right;
+			margin-right: -15px;
+		}
+		.year-slider{
+			width: 100%;	
+		}	
+		label{
+			font-size: 1.1em;
+			font-weight: bold;
+		}
 	</style>
 </head>
 
 <body>
-	<h1>Map Title Goes Here</h1>
+	<h1> U. S. Unemployment Rates, 2001 - 2013</h1>
 	<div id='map'></div>
+	<div id='ui-controls'</div>
+		 <label><span class="min">2001</span><span class="max">2013</span>
+	<input type='range' min='2001' max='2013' value='2001' step='1' class='year-slider'>
+	</input></label>
 
 	<script>
 		// instantiate the Leaflet map
@@ -120,6 +185,7 @@
 			
 			drawLegend();
 			drawMap(states);
+			createSliderUI();
 
 		}
 
@@ -154,7 +220,7 @@
 
 			});
 			
-			//updateLegend(breaks);
+			updateLegend(breaks);
 
 		}
 
@@ -210,22 +276,45 @@
 		}
 
 		// function to update the legend
-	function updateLegend(){
+	function updateLegend(breaks){
 		var legend = $('.legend').html("<h3>% Unemployment: " + attribute +"</h3><ul>");
-		for(var i = 0; i< breaks.length - 1; i++){
+		
+		for (var i = 0; i<breaks.length-1; i++){
+			
 			var color = getColor(breaks[i + 1], breaks);
+			
 			$('.legend ul').append('<li><span style = "background:' + color + '"></span>'+
 				breaks[i] + ' &mdash;' +
-				breaks[1 + 1] + '</li>');
-			
+				breaks[i + 1] + '</li>');
 		}
 		legend.append("</ul>");
 	}
 		
-		//
+		
 
 
 		// function to create the range slider
+		function createSliderUI(){
+			var sliderControl = L.control({position:'bottomleft'});
+			sliderControl.onAdd = function(map){
+				var slider = L.DomUtil.get('ui-controls');
+				
+				L.DomEvent.addListener(slider,'mousedown', function(e){
+					L.DomEvent.stopPropagation(e);
+				});
+				
+				return slider
+											
+			}
+			sliderControl.addTo(map);
+			
+			$('.year-slider')
+			.on('input change',function(){
+				attribute = $(this).val();
+				updateMap();
+			      });
+			
+		}
 	</script>
 
 </body>
