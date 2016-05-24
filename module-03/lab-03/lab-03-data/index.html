@@ -155,6 +155,7 @@
 		$.getJSON('ky-counties.json', function (counties) {
 
 			L.geoJson(counties).addTo(map);
+			console.log(counties);
 
 			Papa.parse('ky-unemployment-data.csv', {
 
@@ -168,7 +169,6 @@
 
 				}
 			});
-
 		});
 
 
@@ -179,8 +179,8 @@
 
 				var props = counties.features[county].properties;
 
-				for (d in data.data) {
-					if (props.CNTY === data.data[d].COUNTY_FIP) {
+				for (var d in data.data) {
+					if (props.COUNTY_FIP === data.data[d].CNTY) {
 						counties.features[county].properties = data.data[d];
 						break;
 					}
@@ -209,11 +209,11 @@
 
 			}).addTo(map);
 
-			updateMap()
+			updateMap(counties)
 		}
 
 		// function to update the map
-		function updateMap() {
+		function updateMap(counties) {
 
 			var breaks = getClassBreaks();
 
@@ -239,8 +239,7 @@
 				values.push(value);
 			});
 		   
-
-			var breaks = ss.quantile(values, [0, 0.2, 0.4, 0.6, 0.8, 1]);
+            var breaks = ss.quantile(values, [0, 0.2, 0.4, 0.6, 0.8, 1]);
 
 			return breaks;
 
@@ -320,6 +319,32 @@
 			      });
 			
 		}
+		
+		//bind a popup to the layer, populated with calculated layer
+				//attribute values
+                layer.bindPopup("<b>"+props["NAME"]+" County</b></br>" +
+                               labels[attribute] + ": " +
+                                ((props[attribute]/props[norm])*100).toLocaleString());  
+				
+				//install mouseover feature that will display info panel for each //county when moved onto the KY counties
+				layer.on('mouseover', function(){
+					
+					$('.info').show();
+                    layer.bringToFront();
+                    layer.setStyle({color: 'yellow'});
+					
+					//display calculated values for each layer in info panel
+					updateInfo(layer);						
+					
+				});
+				//hides info panel when mouse is moved off the outline of KY
+				layer.on('mouseout', function(){
+					$('.info').hide();
+                    
+					layer.setStyle({color: '#dddddd'});
+				});
+			                                                        
+        
 	</script>
 
 </body>
