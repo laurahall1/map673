@@ -155,17 +155,14 @@
 		$.getJSON('ky-counties.json', function (counties) {
 
 			L.geoJson(counties).addTo(map);
-			console.log(counties);
 
 			Papa.parse('ky-unemployment-data.csv', {
 
 				download: true,
 				 header: true,
 				 complete: function(data) {
-					 console.log(data);
 
-					processData(counties, data);
-
+					processData(counties, data)
 
 				}
 			});
@@ -179,7 +176,7 @@
 
 				var props = counties.features[county].properties;
 
-				for (var d in data.data) {
+				for (d in data.data) {
 					if (props.COUNTY_FIP === data.data[d].CNTY) {
 						counties.features[county].properties = data.data[d];
 						break;
@@ -222,12 +219,16 @@
 					fillColor: getColor(Number(layer.feature.properties[attribute]), breaks)
 
 				})
-
+				
+				
+                    
+					
 			});
 			
 			updateLegend(breaks);
 
 		}
+		
 
 		// function get the class breaks  
 		function getClassBreaks() {
@@ -288,8 +289,8 @@
 			var color = getColor(breaks[i + 1], breaks);
 			
 			$('.legend ul').append('<li><span style = "background:' + color + '"></span>'+
-				breaks[i] + ' &mdash;' +
-				breaks[i + 1] + '</li>');
+              breaks[i].toLocaleString() + ' &mdash;' +
+              breaks[i + 1].toLocaleString() + '</li>');
 		}
 		legend.append("</ul>");
 	}
@@ -317,33 +318,8 @@
 				attribute = $(this).val();
 				updateMap();
 			      });
-			
 		}
 		
-		//bind a popup to the layer, populated with calculated layer
-				//attribute values
-                layer.bindPopup("<b>"+props["NAME"]+" County</b></br>" +
-                               labels[attribute] + ": " +
-                                ((props[attribute]/props[norm])*100).toLocaleString());  
-				
-				//install mouseover feature that will display info panel for each //county when moved onto the KY counties
-				layer.on('mouseover', function(){
-					
-					$('.info').show();
-                    layer.bringToFront();
-                    layer.setStyle({color: 'yellow'});
-					
-					//display calculated values for each layer in info panel
-					updateInfo(layer);						
-					
-				});
-				//hides info panel when mouse is moved off the outline of KY
-				layer.on('mouseout', function(){
-					$('.info').hide();
-                    
-					layer.setStyle({color: '#dddddd'});
-				});
-			                                                        
         
 	</script>
 
