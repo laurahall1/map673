@@ -112,6 +112,22 @@
 			font-size: 1.1em;
 			font-weight: bold;
 		}
+		.leaflet-popup-content {
+            max-width: 160px;   
+        }
+		.info {
+			padding: 6px 8px;
+            font-size: 1em;
+            background: rgba(75,75,75,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+			text-align: right;
+            display: none;
+		}
+		.info h3{
+			margin: 0;
+			color: whitesmoke;
+		}
 		</style>
 </head>
 
@@ -188,6 +204,7 @@
 			drawLegend();
 			drawMap(counties);
 			createSliderUI();
+			drawInfo();
 
 		}
 
@@ -203,6 +220,7 @@
 						 fillColor: '#1f78b4'
 					}
 				}
+				
 
 			}).addTo(map);
 
@@ -220,15 +238,34 @@
 
 				})
 				
-				
                     
 					
 			});
+			layer.bindPopup("<b>"+props["NAME"]+" County</b></br>" +
+                               labels[attribute]);  
+				
+				//install mouseover feature that will display info panel for each //county when moved onto the KY counties
+				layer.on('mouseover', function(){
+					
+					$('.info').show();
+                    layer.bringToFront();
+                    layer.setStyle({color: 'yellow'});
+					
+					//display calculated values for each layer in info panel
+					updateInfo(layer);						
+					
+				});
+				//hides info panel when mouse is moved off the outline of KY
+				layer.on('mouseout', function(){
+					$('.info').hide();
+                    
+					layer.setStyle({color: '#dddddd'});
+				});
 			
-			updateLegend(breaks);
-
-		}
-		
+				
+				updateLegend(breaks);
+					
+            }
 
 		// function get the class breaks  
 		function getClassBreaks() {
@@ -295,7 +332,13 @@
 		legend.append("</ul>");
 	}
 		
-		
+		function updateInfo(layer){
+			//create function to update info panel when mousing over new county
+			//create abbreviated variable for properties
+			var props = layer.feature.properties;
+			//create variable to enter content into info panel
+			var html = "<h3>" + props.NAME + " COUNTY</h3>" + attribute + ":" +
+			var info = $('.info').append
 
 
 		// function to create the range slider
